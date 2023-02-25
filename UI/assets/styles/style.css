@@ -1,0 +1,78 @@
+:root {
+    --color-white: #ffffff;
+    --color-black: #333333;
+    --color-primary: #4828CA;
+    --color-secondary: #e3e3e3;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    background: var(--color-white);
+    color: var(--color-black);
+}
+
+h1 {
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+.header {
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header__nav,
+.logo,
+.header__user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header__nav {
+    justify-content: space-between;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-size: 16px;
+    padding: 10px 0;
+    margin: 0;
+}
+
+.logo__title {
+    font-size: 42px;
+}
+
+.header__user-name:visited {
+    color: var(--color-primary);
+}
+
+.button {
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 24px;
+}
