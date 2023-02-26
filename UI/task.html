@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles/style.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="navigation navigation_header">
+                <div class="logo">
+                    <img src="assets/img/logo.svg" alt="logo">
+                    <h1 class="header__logo-title">Task Tracker</h1>
+                </div>
+                <div class="user-info">
+                    <a href="" class="header__user-name">Aleksey Bliudnik</a>
+                    <a href="" class="header__user-avatar"><img src="assets/img/avatar.svg" alt="avatar"></a>
+                    <button class="header__btn-exit button">Exit</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="main task-page__main">
+        <section class="task-page">
+            <div class="task-page__task-card task-card">
+                <div class="task-card__header">
+                    <div class="task-card__title-date">
+                        <div class="task-card__title-privacy">
+                            <h3 class="task-page__title task-card__title">Task Name</h3>
+                            <div class="image-privacy"></div>
+                        </div>
+                        <span class="task-card__date">18.02.2023</span>
+                    </div>
+                    <span class="task-card__user-name">User Name</span>
+                </div>
+                <div class="task-page__info task-card__info">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi in tellus nisi. Aliquam
+                    feugiat, dolor in sagittis semper, ipsum mi mollis mi, a commodo tellus odio eu odio.
+                    Vestibulum eu vehicula nunc, elementum vehicula sapien. Suspendisse justo nisl, pretium
+                    at vulputate donec.
+                </div>
+                <div class="task-card__additional">
+                    <div class="task-page__subtitle task-card__status task-card__title">Complete</div>
+                    <div class="task-card__progress low-status">low</div>
+                </div>
+                <span class="line"></span>
+                <div class="task-card__buttons">
+                    <button class="task-page__btn task-card__button button">edit</button>
+                    <button class="task-page__btn task-card__button button">delete</button>
+                </div>
+            </div>
+            <div class="comments">
+                <h3 class="task-page__subtitle task-card__title">Comments</h3>
+                <div class="comments-field">
+                    <div class="comment-card">
+                        <div class="comment__header">
+                            <span class="comment__user-name">User Name</span>
+                            <span class="comment__date">25.02.2023</span>
+                        </div>
+                        <span class="comment-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
+                            accumsan arcu nisi, non faucibus vel.</span>
+                    </div>
+                    <div class="comment-card">
+                        <div class="comment__header">
+                            <span class="comment__user-name">User Name</span>
+                            <span class="comment__date">18.02.2023</span>
+                        </div>
+                        <span class="comment-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
+                            felis elit, elementum nec eleifend in, maximus odio.</span>
+                    </div>
+                    <div class="add-comment">
+                        <input class='input-comment' type="text">
+                        <button class="button">SEND</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <div class="navigation navigation_footer">
+                <h1 class="footer__logo-title">Task Tracker</h1>
+                <div class="user-info">
+                    <a class='footer__user-name' href="">Aleksey Bliudnik</a>
+                    <a class='footer__mail' href="mailto:alexeibluydnik@gmail.com" title="alexeibluydnik@gmail.com"><img
+                            src="assets/img/mail.svg" alt="email"></a>
+                </div>
+                <span class="footer__last-change">Last change: 25.02.2023</span>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
