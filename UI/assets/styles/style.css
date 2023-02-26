@@ -91,6 +91,7 @@ a {
     border: none;
     border-radius: 16px;
     cursor: pointer;
+    transition: 0.5s all ease;
 }
 
 .main__container {
@@ -319,4 +320,87 @@ a {
     display: flex;
     justify-content: flex-end;
     gap: 16px;
+}
+
+/* task page */
+
+
+
+.task-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.task-page__task-card {
+    width: 75%;
+    font-size: 1rem;
+    border-radius: 0;
+}
+
+.task-page__info {
+    overflow: initial;
+    text-overflow: initial;
+    white-space: initial;
+}
+
+.task-page__title {
+    font-size: 1.5rem;
+}
+
+.task-page__subtitle {
+    font-size: 1.2rem;
+}
+
+.comments {
+    width: 65%;
+}
+
+.comments-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--color-secondary);
+    padding: 20px;
+}
+
+.comment-card {
+    padding: 20px;
+    box-shadow: 1px 1px 3px var(--color-black);
+    background: var(--color-white);
+}
+
+.comment__header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.comment__user-name {
+    color: var(--color-primary);
+}
+
+.comment__date {
+    font-size: 1rem;
+    color: var(--color-secondary-1);
+}
+
+.add-comment {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-comment {
+    width: 100%;
+    height: 60px;
+    border-radius: 20px;
+}
+
+.task-page__btn {
+    font-size: 1.2rem;
+}
+
+.button:hover {
+    background: var(--color-primary);
 }
