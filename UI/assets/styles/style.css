@@ -120,6 +120,7 @@ a {
     padding: 12px 20px;
     border: 2px solid var(--color-primary);
     cursor: pointer;
+    min-width: 90px;
 }
 
 .toogle-btn_active {
@@ -185,6 +186,11 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.task-card__title-privacy {
+    display: flex;
+    gap: 4px;
 }
 
 .task-card__title {
@@ -403,4 +409,28 @@ a {
 
 .button:hover {
     background: var(--color-primary);
+}
+
+@media screen and (max-width:768px) {
+    .header__logo-title {
+        font-size: 1.3rem;
+    }
+
+    .navigation {
+        font-size: 0.875rem;
+    }
+
+    .board {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .list-task__wrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .container {
+        margin: 20px auto;
+    }
 }
