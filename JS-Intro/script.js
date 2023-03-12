@@ -150,7 +150,7 @@ const tasks = [
         id: "21",
         name: "Task 11",
         description: "Description for Task 11",
-        createdAt: new Date("2022-01-11"),
+        createdAt: new Date("2023-01-11"),
         assignee: "Aleksey",
         status: "In progress",
         priority: "Medium",
@@ -201,7 +201,7 @@ const tasks = [
         id: "13",
         name: "Task 13",
         description: "Description for Task 13",
-        createdAt: new Date("2022-01-13"),
+        createdAt: new Date("2023-01-13"),
         assignee: "John",
         status: "To Do",
         priority: "High",
@@ -243,7 +243,7 @@ const tasks = [
         id: "15",
         name: "Task 15",
         description: "Description for Task 15",
-        createdAt: new Date("2022-01-15"),
+        createdAt: new Date("2023-01-15"),
         assignee: "John",
         status: "Complete",
         priority: "Low",
@@ -313,10 +313,35 @@ const tasks = [
         id: "20",
         name: "Task 20",
         description: "Description for Task 20",
-        createdAt: new Date("2022-01-20"),
+        createdAt: new Date("2023-01-20"),
         assignee: "Jane",
         status: "In progress",
         priority: "Medium",
+        isPrivate: true,
+        comments: [],
+    },
+];
+
+const invalidTasks = [
+    {
+        id: 12,
+        name: "Write function",
+        description: "Description for Task 20",
+        createdAt: new Date("2023-01-20"),
+        assignee: "Jane",
+        status: "In progress",
+        priority: "Medium",
+        isPrivate: true,
+        comments: [],
+    },
+    {
+        id: "210",
+        name: "Task 20",
+        description: "Description for Task 20",
+        createdAt: new Date("2023-01-20"),
+        assignee: "Jane",
+        status: "In progress",
+        priority: false,
         isPrivate: true,
         comments: [],
     },
@@ -536,6 +561,7 @@ const taskModule = (function () {
                 throw new Error('Invalid value');
             }
             this.user = usr;
+            return true;
         } catch (error) {
             console.log(error);
         }
@@ -555,3 +581,80 @@ const taskModule = (function () {
     }
 
 })();
+
+//getTasks
+console.log('Работа getTasks без передачи аргументов:', taskModule.getTasks());
+console.log('getTasks(0,10):\n', taskModule.getTasks(0, 10));
+console.log('getTasks(5,12):\n', taskModule.getTasks(5, 12));
+console.log('getTasks(0,10, { assignee: "ale" }):\n', taskModule.getTasks(0, 10, { assignee: 'ale' }));
+console.log('getTasks(0,10, { description: "task" }):\n', taskModule.getTasks(0, 10, { description: 'task' }));
+console.log('getTasks(0,5, { dateFrom: new Date("2023") }):\n', taskModule.getTasks(0, 5, { dateFrom: new Date('2023') }));
+console.log('getTasks(0,10, { status: "To Do" }):\n', taskModule.getTasks(0, 10, { status: 'To Do' }));
+console.log('getTasks(0,10, { assignee:"Bob", status: "To Do" }):\n', taskModule.getTasks(0, 10, { assignee: 'Bob', status: 'To Do' }));
+console.log('getTasks(0,20) Все 20 задач:\n', taskModule.getTasks(0, 20));
+
+//getTask
+console.log('Вывод отдной задачи по id getTask("12"):\n', taskModule.getTask('12'));
+console.log('getTask(12):\n', taskModule.getTask(12));
+console.log('getTask("dasd"):\n', taskModule.getTask('dasd'));
+console.log('getTask("1234"):\n', taskModule.getTask('1234'));
+
+//valideteTask
+console.log('Проверка на валидность 1 задачи validateTask(task[0]):\n', taskModule.validateTask(tasks[0]));
+console.log('Проверка на валидность задачи с id доугого типа validateTask(invalidTasks[0]):\n', taskModule.validateTask(invalidTasks[0]));
+console.log('Проверка на валидность задачи с приоритетом типа boolean validateTask(invalidTasks[1]):\n', taskModule.validateTask(invalidTasks[1]));
+
+//addTask
+console.log('Работа с добавление задач:');
+console.log('Все задачи до добавления:\n', taskModule.getTasks(0, 100));
+console.log('Добавление:\n', taskModule.addTask('Write method addTask', 'add a new task to the tasks array, checking it for validity beforehand', 'Medium'));
+console.log('Все задачи после добавления:\n', taskModule.getTasks(0, 100));
+console.log('Добавление c приоритетом true(не валидным значением):\n', taskModule.addTask('Write method addTask', 'add a new task to the tasks array, checking it for validity beforehand', 'True'));
+console.log('Все задачи после добавления:\n', taskModule.getTasks(0, 100));
+
+//editTask
+console.log('Изменение задач\ngetTask("11"):\n', taskModule.getTask('11'));
+console.log('Меняем имя задачи с id 11 editTaks("11","New Name"):\n', taskModule.editTask('11', 'New name'));
+console.log('Изменилось имя у задачи с id 11:\n', taskModule.getTask('11'));
+console.log('Меняем автора задачи с id 11:\n', taskModule.editTask('11', 'New name', 'New desc', 'Low', 'newAuthor'));
+console.log('Просмотр нового автора getTask("11"):\n', taskModule.getTask('11'));
+console.log('Опять пытаемся изменить задачу, но не выходит, потому что у нее другой автор:\n', taskModule.editTask('11', 'New name2'));
+console.log('Невалидный пример:\n', taskModule.editTask(11, 'New name22'));
+
+//removeTask
+console.log('Удаление задач:\n Все задачи:\n', taskModule.getTasks(0, 100));
+console.log('Удаление задачи с id 11 removeTask("11"):\n', taskModule.removeTask('11'));
+console.log('Не получилось, так как у этой задачи другой автор');
+console.log('Удаление задачи с id 17 removeTask("17"):\n', taskModule.removeTask('17'));
+console.log('Удаление прошло успешно:\n', taskModule.getTasks(0, 100));
+
+const comm = {
+    id: "1",
+    text: "Comment 1 for Task 19",
+    createdAt: new Date("2022-01-20"),
+    author: "Bob"
+};
+const invalComm = {
+    id: "1",
+    text: "Comment 1 for Task 19",
+    createdAt: new Date("2022-01-20"),
+    author: ""
+};
+
+//validateComment
+console.log('Проверка валидации комментария:\n', taskModule.validateComment(comm));
+console.log('Проверка валидации комментария:\n', taskModule.validateComment(invalComm));
+
+//addComment
+console.log('Комментарии задачи с id 12:\n', taskModule.getTask('12').comments);
+console.log('Добавление комменатария к задаче с id 12:\n', taskModule.addComment('12', 'Good Job!'));
+console.log('Комментарии задачи с id 12:\n', taskModule.getTask('12').comments);
+console.log('Добавление комменатария к задаче с id 12 с невалидным значением:\n', taskModule.addComment('12', true));
+console.log('Комментарии задачи с id 12:\n', taskModule.getTask('12').comments);
+
+//changeUser
+console.log('Текущий юзер:\n', taskModule.user);
+console.log('Меняем юзера:\n', taskModule.changeUser('Nikita'));
+console.log('Текущий юзер:\n', taskModule.user);
+console.log('Меняем юзера:\n', taskModule.changeUser(1));
+console.log('Текущий юзер:\n', taskModule.user);
