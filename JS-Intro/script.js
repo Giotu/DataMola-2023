@@ -321,3 +321,237 @@ const tasks = [
         comments: [],
     },
 ];
+
+const taskModule = (function () {
+    let user = 'Aleksey';
+
+    function getTasks(skip = 0, top = 10, filterConfig = {}) {
+        let filteredTasks = [...tasks];
+
+        if (filterConfig.assignee) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.assignee.toLowerCase().includes(filterConfig.assignee.toLowerCase().trim()));
+        }
+
+        if (filterConfig.description) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.description.toLowerCase().includes(filterConfig.description.toLowerCase().trim()));
+        }
+
+        if (filterConfig.dateFrom) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.createdAt >= filterConfig.dateFrom);
+        }
+
+        if (filterConfig.dateTo) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.createdAt <= filterConfig.dateTo);
+        }
+
+        if (filterConfig.status) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.status === filterConfig.status);
+        }
+
+        if (filterConfig.priority) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.priority === filterConfig.priority);
+        }
+
+        if (filterConfig.isPrivate) {
+            filteredTasks = filteredTasks.filter(task =>
+                task.isPrivate === filterConfig.isPrivate);
+        }
+
+        return filteredTasks.sort((a, b) =>
+            b.createdAt - a.createdAt).slice(skip, top + skip);
+    }
+
+    function getTask(id) {
+        try {
+            if (typeof id !== 'string') {
+                throw new Error('Invalid id');
+            }
+
+            const task = tasks.find(task => task.id === id);
+
+            if (!task) {
+                console.log('Task not found!');
+            }
+            return task;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    function validateTask(task) {
+        if (!task.id || typeof task.id !== 'string' || !task.id.trim().length) {
+            return false;
+        }
+
+        if (!task.name || typeof task.name !== 'string' || task.name.length > 100 || !task.name.trim().length) {
+            return false;
+        }
+
+        if (!task.description || typeof task.description !== 'string' || task.description > 280 || !task.description.trim().length) {
+            return false;
+        }
+
+        if (!task.createdAt || !(task.createdAt instanceof Date)) {
+            return false;
+        }
+
+        if (!task.assignee || typeof task.assignee !== 'string' || !task.assignee.trim().length) {
+            return false;
+        }
+
+        if (!task.status || (task.status !== 'To Do' && task.status !== 'In progress' && task.status !== 'Complete')) {
+            return false;
+        }
+
+        if (!task.priority || (task.priority !== 'High' && task.priority !== 'Medium' && task.priority !== 'Low')) {
+            return false;
+        }
+
+        if (typeof task.isPrivate !== 'boolean') {
+            return false;
+        }
+
+        if (!Array.isArray(task.comments)) {
+            return false;
+        }
+        return true;
+    }
+
+    function addTask(name, description, priority, assignee = user, status = 'To Do', isPrivate = false) {
+        function getMaxIdTasks() {
+            return Number(tasks.map(task => task.id).sort((a, b) => b - a)[0]);
+        }
+
+        let id = String(getMaxIdTasks() + 1);
+        let createdAt = new Date();
+        const comments = [];
+
+        const task = {
+            id,
+            name,
+            description,
+            createdAt,
+            assignee,
+            status,
+            priority,
+            isPrivate,
+            comments
+        };
+
+        if (!validateTask(task)) {
+            return false;
+        }
+
+        tasks.push(task);
+        return true;
+
+    }
+
+    function editTask(id, name, description, priority, assignee, status, isPrivate = false) {
+        let task = { ...getTask(id) };
+        let index = tasks.findIndex(task => task.id === id);
+
+        if (task.assignee !== user) {
+            return false;
+        }
+
+        task.name = name || task.name;
+        task.description = description || task.description;
+        task.priority = priority || task.priority;
+        task.assignee = assignee || task.assignee;
+        task.status = status || task.status;
+        task.isPrivate = isPrivate || task.isPrivate;
+
+        if (!validateTask(task)) {
+            return false;
+        }
+
+        tasks[index] = task;
+
+        return true;
+    }
+
+    function removeTask(id) {
+        const index = tasks.findIndex(task => task.id === id);
+        const task = getTask(id);
+        if (!task) {
+            return false;
+        }
+        if (task.assignee === user) {
+            tasks.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+
+    function validateComment(com) {
+        if (!com.id || typeof com.id !== 'string' || !com.id.trim().length) {
+            return false;
+        }
+
+        if (!com.text || typeof com.text !== 'string' || com.text > 280 || !com.text.trim().length) {
+            return false;
+        }
+
+        if (!com.createdAt || !(com.createdAt instanceof Date)) {
+            return false;
+        }
+
+        if (!com.author || typeof com.author !== 'string' || !com.author.trim().length) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function addComment(id, text) {
+        let task = getTask(id);
+        const lastIdComment = String(task.comments.length + 1);
+        const createdAt = new Date();
+        const author = user;
+        const comment = {
+            id: lastIdComment,
+            text,
+            createdAt,
+            author
+        };
+
+        if (!validateComment(comment)) {
+            return false;
+        }
+
+        task.comments.push(comment);
+        return true;
+    }
+
+    function changeUser(usr) {
+        try {
+            if (typeof usr !== 'string' || usr.trim().length === 0) {
+                throw new Error('Invalid value');
+            }
+            this.user = usr;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    return {
+        user,
+        getTasks,
+        getTask,
+        validateTask,
+        addTask,
+        editTask,
+        removeTask,
+        validateComment,
+        addComment,
+        changeUser
+    }
+
+})();
