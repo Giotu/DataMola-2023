@@ -380,17 +380,9 @@ const invalidTasksTest = [
   },
 ];
 
-function getNextId(arr) {
-  return String(arr.reduce((prev, curr) => Math.max(prev, curr.id), 0) + 1);
-}
-
-function getNextIdComm(arr) {
-  return String(arr.reduce((prev, curr) => prev + curr.comments.length, 0) + 1);
-}
-
 class Task {
   constructor(name, description, assignee, status, priority, isPrivate) {
-    this._id = getNextId(tasks);
+    this._id = crypto.randomUUID();
     this.name = name;
     this.description = description;
     this._createdAt = new Date();
@@ -451,7 +443,7 @@ class Task {
 
 class Comment {
   constructor(text, user) {
-    this._id = getNextIdComm(tasks);
+    this._id = crypto.randomUUID();
     this.text = text;
     this._createdAt = new Date();
     this._author = user;
