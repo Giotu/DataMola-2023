@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-sparse-arrays */
@@ -380,6 +381,47 @@ const invalidTasksTest = [
   },
 ];
 
+class Comment {
+  constructor(text, user) {
+    this._id = crypto.randomUUID();
+    this.text = text;
+    this._createdAt = new Date();
+    this._author = user;
+  }
+
+  get id() {
+    return this._id;
+  }
+
+  get createdAt() {
+    return this._createdAt;
+  }
+
+  get author() {
+    return this._author;
+  }
+
+  static validate(com) {
+    if (!com.id || typeof com.id !== 'string' || !com.id.trim().length) {
+      return false;
+    }
+
+    if (!com.text || typeof com.text !== 'string' || com.text > 280 || !com.text.trim().length) {
+      return false;
+    }
+
+    if (!com.createdAt || !(com.createdAt instanceof Date)) {
+      return false;
+    }
+
+    if (!com.author || typeof com.author !== 'string' || !com.author.trim().length) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
 class Task {
   constructor(name, description, assignee, status, priority, isPrivate) {
     this._id = crypto.randomUUID();
@@ -437,45 +479,11 @@ class Task {
     if (!Array.isArray(task.comments)) {
       return false;
     }
-    return true;
-  }
-}
 
-class Comment {
-  constructor(text, user) {
-    this._id = crypto.randomUUID();
-    this.text = text;
-    this._createdAt = new Date();
-    this._author = user;
-  }
-
-  get id() {
-    return this._id;
-  }
-
-  get createdAt() {
-    return this._createdAt;
-  }
-
-  get author() {
-    return this._author;
-  }
-
-  static validate(com) {
-    if (!com.id || typeof com.id !== 'string' || !com.id.trim().length) {
-      return false;
-    }
-
-    if (!com.text || typeof com.text !== 'string' || com.text > 280 || !com.text.trim().length) {
-      return false;
-    }
-
-    if (!com.createdAt || !(com.createdAt instanceof Date)) {
-      return false;
-    }
-
-    if (!com.author || typeof com.author !== 'string' || !com.author.trim().length) {
-      return false;
+    for (const comment of task.comments) {
+      if (!Comment.validate(comment)) {
+        return false;
+      }
     }
 
     return true;
