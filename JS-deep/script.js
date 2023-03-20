@@ -514,12 +514,12 @@ class TaskCollection {
 
     if (filterConfig.assignee) {
       filteredTasks = filteredTasks.filter(({ assignee }) => assignee
-        .toLowerCase().includes(filterConfig.assignee.toLowerCase().trim()));
+        .toLowerCase().trim().includes(filterConfig.assignee.toLowerCase().trim()));
     }
 
     if (filterConfig.description) {
       filteredTasks = filteredTasks.filter(({ description }) => description
-        .toLowerCase().includes(filterConfig.description.toLowerCase().trim()));
+        .toLowerCase().trim().includes(filterConfig.description.toLowerCase().trim()));
     }
 
     if (filterConfig.dateFrom) {
