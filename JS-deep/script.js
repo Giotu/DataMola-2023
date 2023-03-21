@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-sparse-arrays */
@@ -406,7 +405,7 @@ class Comment {
       return false;
     }
 
-    if (!com.text || typeof com.text !== 'string' || com.text > 280 || !com.text.trim().length) {
+    if (!com.text || typeof com.text !== 'string' || com.text.length > 280 || !com.text.trim().length) {
       return false;
     }
 
@@ -452,7 +451,7 @@ class Task {
       return false;
     }
 
-    if (!task.description || typeof task.description !== 'string' || task.description > 280 || !task.description.trim().length) {
+    if (!task.description || typeof task.description !== 'string' || task.description.length > 280 || !task.description.trim().length) {
       return false;
     }
 
@@ -476,17 +475,8 @@ class Task {
       return false;
     }
 
-    if (!Array.isArray(task.comments)) {
-      return false;
-    }
-
-    for (const comment of task.comments) {
-      if (!Comment.validate(comment)) {
-        return false;
-      }
-    }
-
-    return true;
+    return (Array.isArray(task.comments) && task.comments
+      .every((comment) => Comment.validate(comment)));
   }
 }
 
