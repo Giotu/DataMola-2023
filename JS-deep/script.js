@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-sparse-arrays */
@@ -380,17 +381,62 @@ const invalidTasksTest = [
   },
 ];
 
-function getNextId(arr) {
-  return String(arr.reduce((prev, curr) => Math.max(prev, curr.id), 0) + 1);
-}
+class Comment {
+  constructor(text, user) {
+    this._id = crypto.randomUUID();
+    this.text = text;
+    this._createdAt = new Date();
+    this._author = user;
+  }
 
-function getNextIdComm(arr) {
-  return String(arr.reduce((prev, curr) => prev + curr.comments.length, 0) + 1);
+  get id() {
+    return this._id;
+  }
+
+  set id(value) {
+    throw new Error('Cannot modify read-only property');
+  }
+
+  get createdAt() {
+    return this._createdAt;
+  }
+
+  set createdAt(value) {
+    throw new Error('Cannot modify read-only property');
+  }
+
+  get author() {
+    return this._author;
+  }
+
+  set author(value) {
+    throw new Error('Cannot modify read-only property');
+  }
+
+  static validate(com) {
+    if (!com.id || typeof com.id !== 'string' || !com.id.trim().length) {
+      return false;
+    }
+
+    if (!com.text || typeof com.text !== 'string' || com.text.length > 280 || !com.text.trim().length) {
+      return false;
+    }
+
+    if (!com.createdAt || !(com.createdAt instanceof Date)) {
+      return false;
+    }
+
+    if (!com.author || typeof com.author !== 'string' || !com.author.trim().length) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 class Task {
   constructor(name, description, assignee, status, priority, isPrivate) {
-    this._id = getNextId(tasks);
+    this._id = crypto.randomUUID();
     this.name = name;
     this.description = description;
     this._createdAt = new Date();
@@ -405,8 +451,16 @@ class Task {
     return this._id;
   }
 
+  set id(value) {
+    throw new Error('Cannot modify read-only property');
+  }
+
   get createdAt() {
     return this._createdAt;
+  }
+
+  set createdAt(value) {
+    throw new Error('Cannot modify read-only property');
   }
 
   static validate(task) {
@@ -418,7 +472,7 @@ class Task {
       return false;
     }
 
-    if (!task.description || typeof task.description !== 'string' || task.description > 280 || !task.description.trim().length) {
+    if (!task.description || typeof task.description !== 'string' || task.description.length > 280 || !task.description.trim().length) {
       return false;
     }
 
@@ -442,51 +496,8 @@ class Task {
       return false;
     }
 
-    if (!Array.isArray(task.comments)) {
-      return false;
-    }
-    return true;
-  }
-}
-
-class Comment {
-  constructor(text, user) {
-    this._id = getNextIdComm(tasks);
-    this.text = text;
-    this._createdAt = new Date();
-    this._author = user;
-  }
-
-  get id() {
-    return this._id;
-  }
-
-  get createdAt() {
-    return this._createdAt;
-  }
-
-  get author() {
-    return this._author;
-  }
-
-  static validate(com) {
-    if (!com.id || typeof com.id !== 'string' || !com.id.trim().length) {
-      return false;
-    }
-
-    if (!com.text || typeof com.text !== 'string' || com.text > 280 || !com.text.trim().length) {
-      return false;
-    }
-
-    if (!com.createdAt || !(com.createdAt instanceof Date)) {
-      return false;
-    }
-
-    if (!com.author || typeof com.author !== 'string' || !com.author.trim().length) {
-      return false;
-    }
-
-    return true;
+    return (Array.isArray(task.comments) && task.comments
+      .every((comment) => Comment.validate(comment)));
   }
 }
 
@@ -509,17 +520,24 @@ class TaskCollection {
     return this._tasks;
   }
 
+  set tasks(arrayTasks) {
+    if (!Array.isArray(arrayTasks)) {
+      throw new Error('tasks must be an array');
+    }
+    this._tasks = arrayTasks;
+  }
+
   getPage(skip = 0, top = 10, filterConfig = {}) {
-    let filteredTasks = this._tasks.slice();
+    let filteredTasks = this.tasks.slice();
 
     if (filterConfig.assignee) {
       filteredTasks = filteredTasks.filter(({ assignee }) => assignee
-        .toLowerCase().includes(filterConfig.assignee.toLowerCase().trim()));
+        .toLowerCase().trim().includes(filterConfig.assignee.toLowerCase().trim()));
     }
 
     if (filterConfig.description) {
       filteredTasks = filteredTasks.filter(({ description }) => description
-        .toLowerCase().includes(filterConfig.description.toLowerCase().trim()));
+        .toLowerCase().trim().includes(filterConfig.description.toLowerCase().trim()));
     }
 
     if (filterConfig.dateFrom) {
@@ -551,10 +569,10 @@ class TaskCollection {
         throw new Error('Invalid id');
       }
 
-      const task = this._tasks.find((task) => task.id === id);
+      const task = this.tasks.find((task) => task.id === id);
 
       if (!task) {
-        return 'Task not found!';
+        return null;
       }
       return task;
     } catch (error) {
@@ -564,7 +582,7 @@ class TaskCollection {
   }
 
   add(name, description, assignee, status, priority, isPrivate) {
-    if (!this._user || this._user !== assignee) {
+    if (!this.user || this.user !== assignee) {
       return false;
     }
 
@@ -574,18 +592,18 @@ class TaskCollection {
       return false;
     }
 
-    this._tasks.push(task);
+    this.tasks.push(task);
     return true;
   }
 
   edit(id, name, description, assignee, status, priority, isPrivate) {
-    const index = this._tasks.findIndex((task) => task.id === id);
-    if (index === -1 || this._tasks[index].assignee !== this._user) {
+    const index = this.tasks.findIndex((task) => task.id === id);
+    if (index === -1 || this.tasks[index].assignee !== this.user) {
       return false;
     }
     const task = Object.create(
-      Object.getPrototypeOf(this._tasks[index]),
-      Object.getOwnPropertyDescriptors(this._tasks[index]),
+      Object.getPrototypeOf(this.tasks[index]),
+      Object.getOwnPropertyDescriptors(this.tasks[index]),
     );
 
     task.name = name || task.name;
@@ -599,24 +617,24 @@ class TaskCollection {
       return false;
     }
 
-    this._tasks[index] = task;
+    this.tasks[index] = task;
 
     return true;
   }
 
   remove(id) {
-    const index = this._tasks.findIndex((task) => task.id === id);
+    const index = this.tasks.findIndex((task) => task.id === id);
     const task = this.get(id);
-    if (!task || task.assignee !== this._user) {
+    if (!task || task.assignee !== this.user) {
       return false;
     }
-    this._tasks.splice(index, 1);
+    this.tasks.splice(index, 1);
     return true;
   }
 
   addComment(id, text) {
     const task = this.get(id);
-    const comment = new Comment(text, this._user);
+    const comment = new Comment(text, this.user);
     if (!Comment.validate(comment) || !task) {
       return false;
     }
@@ -629,22 +647,16 @@ class TaskCollection {
       if (!Task.validate(curr)) {
         prev.push(curr);
       } else {
-        this._tasks.push(curr);
+        this.tasks.push(curr);
       }
       return prev;
     }, []);
   }
 
   clear() {
-    this._tasks = [];
+    this.tasks = [];
   }
 }
-
-const newTask = new Task('Новое задание', 'Новое описание', 'Vova', 'Complete', 'Low', true);
-console.log(newTask);
-console.log('Валидация задачи:', Task.validate(newTask));
-console.log('Попытка смены id у задачи на', newTask.id = '10');
-console.log('Что вышло:', newTask.id);
 
 const newCom = new Comment('Good Job!', 'Nikita');
 console.log(newCom);
@@ -670,8 +682,13 @@ console.log(newCollection.getPage());
 console.log('add task:', newCollection.add('newTask', 'New Description', 'Vanya', 'Complete', 'Low', true));
 console.log(newCollection.getPage());
 
-console.log('edit task:', newCollection.edit('22', 'Я изменил задачу'));
-console.log(newCollection.get('22'));
+console.log('add comment:', newCollectionWithArrayTasks.addComment('12', 'Good job!'));
+console.log(newCollectionWithArrayTasks.get('12'));
+console.log('add comment:', newCollectionWithArrayTasks.addComment(11, 'New Description', 'Vanya', 'Complete', 'Low', true));
+console.log(newCollectionWithArrayTasks.get('11'));
+
+console.log('edit task:', newCollectionWithArrayTasks.edit('21', 'Я изменил задачу'));
+console.log(newCollectionWithArrayTasks.get('21'));
 console.log('edit invalid task:', newCollection.edit('23', 'Я изменил задачу'));
 console.log(newCollection.getPage());
 console.log('edit task с новым автором:', newCollection.edit('22', 'Я изменил задачу2', 'Новое описание', 'Bob'));
@@ -679,14 +696,20 @@ console.log(newCollection.getPage());
 console.log('edit task, где юзеры задачи и создателя не совпадают:', newCollection.edit('22', 'Я изменил задачу3', 'Новое описание2'));
 console.log(newCollection.getPage());
 
-console.log('remove(авторы отличаются)', newCollection.remove('22'));
-console.log(newCollection.getPage());
-console.log('Сменил юзера', newCollection.user = 'Bob');
-console.log('remove', newCollection.remove('22'));
-console.log(newCollection.getPage());
+console.log('remove(авторы отличаются)', newCollectionWithArrayTasks.remove('20'));
+console.log(newCollectionWithArrayTasks.getPage());
+console.log('Сменил юзера', newCollectionWithArrayTasks.user = 'Jane');
+console.log('remove', newCollectionWithArrayTasks.remove('20'));
+console.log(newCollectionWithArrayTasks.getPage());
 
+console.log(newCollection.getPage());
 console.log('addAll невалидные:', newCollection.addAll(invalidTasksTest));
 console.log('Коллекция после addAll:', newCollection.getPage());
 
 console.log('clear:', newCollection.clear());
 console.log('после clear:', newCollection.getPage());
+
+const newTask = new Task('Новое задание', 'Новое описание', 'Vova', 'Complete', 'Low', true);
+console.log(newTask);
+console.log('Валидация задачи:', Task.validate(newTask));
+console.log('Попытка смены id у задачи на', newTask.id = '10');
