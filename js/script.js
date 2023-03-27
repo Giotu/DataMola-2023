@@ -1,8 +1,6 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-console */
 /* eslint-disable max-classes-per-file */
-/* eslint-disable no-sparse-arrays */
 /* eslint-disable no-shadow */
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 const tasks = [
   {
@@ -208,7 +206,7 @@ const tasks = [
     name: 'Task 13',
     description: 'Description for Task 13',
     createdAt: new Date('2023-01-13'),
-    assignee: 'John',
+    assignee: 'Lesha',
     status: 'To Do',
     priority: 'High',
     isPrivate: false,
@@ -232,7 +230,7 @@ const tasks = [
     name: 'Task 14',
     description: 'Description for Task 14',
     createdAt: new Date('2022-01-14'),
-    assignee: 'Jane',
+    assignee: 'Lesha',
     status: 'In progress',
     priority: 'Medium',
     isPrivate: true,
@@ -317,59 +315,6 @@ const tasks = [
   },
   {
     id: '20',
-    name: 'Task 20',
-    description: 'Description for Task 20',
-    createdAt: new Date('2023-01-20'),
-    assignee: 'Jane',
-    status: 'In progress',
-    priority: 'Medium',
-    isPrivate: true,
-    comments: [],
-  },
-];
-
-const invalidTasksTest = [
-  {
-    id: 12,
-    name: 'Write function',
-    description: 'Description for Task 20',
-    createdAt: new Date('2023-01-20'),
-    assignee: 'Jane',
-    status: 'In progress',
-    priority: 'Medium',
-    isPrivate: true,
-    comments: [],
-  },
-  {
-    id: '210',
-    name: 'Task 20',
-    description: 'Description for Task 20',
-    createdAt: new Date('2023-01-20'),
-    assignee: 'Jane',
-    status: 'In progress',
-    priority: false,
-    isPrivate: true,
-    comments: [],
-  }, ,
-  {
-    id: '20',
-    name: 'Task 20',
-    description: 'Description for Task 20',
-  },
-  {
-    id: '25',
-    name: 'Task 20',
-    description: 'Description for Task 20',
-    createdAt: new Date('2023-01-20'),
-    assignee: 'Jane',
-    status: 'In progress',
-    priority: 'Medium',
-    isPrivate: true,
-    comments: [],
-  },
-  1,
-  {
-    id: '24',
     name: 'Task 20',
     description: 'Description for Task 20',
     createdAt: new Date('2023-01-20'),
@@ -658,58 +603,198 @@ class TaskCollection {
   }
 }
 
-const newCom = new Comment('Good Job!', 'Nikita');
-console.log(newCom);
-console.log('Валидация комментариев:', Comment.validate(newCom));
+class HeaderView {
+  constructor(containerId) {
+    this.container = document.querySelector(containerId);
+  }
 
-const newCollection = new TaskCollection();
-console.log('созданный newCollection без передачи массива задач:', newCollection);
-const newCollectionWithArrayTasks = new TaskCollection(tasks);
-console.log('созданный newCollection c передачей массива задач:', newCollectionWithArrayTasks);
+  display(user) {
+    const userName = document.querySelector('.header__user-name');
+    const avatar = document.querySelector('.header__user-name');
+    const buttonHeader = document.querySelector('.user-info>button');
+    const buttonAddTask = document.querySelector('.button-add-task');
 
-console.log('getPage():', newCollectionWithArrayTasks.getPage());
-console.log('getPage(2,10):', newCollectionWithArrayTasks.getPage(2, 10));
-console.log('getPage(0,30, { assignee: "Aleksey" }):', newCollectionWithArrayTasks.getPage(0, 30, { assignee: 'Aleksey' }));
-console.log('getPage(0,30, { assignee: "bo",description:"ta" }):', newCollectionWithArrayTasks.getPage(0, 30, { description: 'ta', assignee: 'bo' }));
+    if (user) {
+      userName.textContent = user;
 
-console.log('get("12")', newCollectionWithArrayTasks.get('12'));
-console.log('Id не строка:\n');
-console.log('get(12)', newCollectionWithArrayTasks.get(12));
-console.log('get("123")', newCollectionWithArrayTasks.get('123'));
+      avatar.hidden = false;
 
-console.log('add task:', newCollection.add('newTask', 'New Description', 'Aleksey', 'Complete', 'Low', true));
-console.log(newCollection.getPage());
-console.log('add task:', newCollection.add('newTask', 'New Description', 'Vanya', 'Complete', 'Low', true));
-console.log(newCollection.getPage());
+      buttonHeader.textContent = 'Exit';
+      if (buttonAddTask) {
+        buttonAddTask.hidden = false;
+      }
+    } else {
+      userName.textContent = null;
 
-console.log('add comment:', newCollectionWithArrayTasks.addComment('12', 'Good job!'));
-console.log(newCollectionWithArrayTasks.get('12'));
-console.log('add comment:', newCollectionWithArrayTasks.addComment(11, 'New Description', 'Vanya', 'Complete', 'Low', true));
-console.log(newCollectionWithArrayTasks.get('11'));
+      avatar.hidden = true;
 
-console.log('edit task:', newCollectionWithArrayTasks.edit('21', 'Я изменил задачу'));
-console.log(newCollectionWithArrayTasks.get('21'));
-console.log('edit invalid task:', newCollection.edit('23', 'Я изменил задачу'));
-console.log(newCollection.getPage());
-console.log('edit task с новым автором:', newCollection.edit('22', 'Я изменил задачу2', 'Новое описание', 'Bob'));
-console.log(newCollection.getPage());
-console.log('edit task, где юзеры задачи и создателя не совпадают:', newCollection.edit('22', 'Я изменил задачу3', 'Новое описание2'));
-console.log(newCollection.getPage());
+      buttonHeader.textContent = 'Log In';
 
-console.log('remove(авторы отличаются)', newCollectionWithArrayTasks.remove('20'));
-console.log(newCollectionWithArrayTasks.getPage());
-console.log('Сменил юзера', newCollectionWithArrayTasks.user = 'Jane');
-console.log('remove', newCollectionWithArrayTasks.remove('20'));
-console.log(newCollectionWithArrayTasks.getPage());
+      buttonAddTask.hidden = true;
+    }
+  }
+}
 
-console.log(newCollection.getPage());
-console.log('addAll невалидные:', newCollection.addAll(invalidTasksTest));
-console.log('Коллекция после addAll:', newCollection.getPage());
+class TaskFeedView {
+  constructor(containerId) {
+    this.container = document.querySelector(containerId);
+  }
 
-console.log('clear:', newCollection.clear());
-console.log('после clear:', newCollection.getPage());
+  display(array) {
+    if (this.container === null) {
+      return false;
+    }
+    const listsTasks = this.container.querySelectorAll('.list-task');
+    const listTasksToDo = listsTasks[0];
+    const listTasksInProgress = listsTasks[1];
+    const listTasksComplete = listsTasks[2];
+    const taskToDo = array.filter((elem) => elem.status === 'To Do');
+    const taskInProgress = array.filter((elem) => elem.status === 'In progress');
+    const taskComplete = array.filter((elem) => elem.status === 'Complete');
 
-const newTask = new Task('Новое задание', 'Новое описание', 'Vova', 'Complete', 'Low', true);
-console.log(newTask);
-console.log('Валидация задачи:', Task.validate(newTask));
-console.log('Попытка смены id у задачи на', newTask.id = '10');
+    function createListTask(listTask, arrayTasks) {
+      const list = listTask;
+      list.innerHTML = arrayTasks.map((elem) => `<div class="task-card">
+        <div class="task-card__header">
+            <div class="task-card__title-date">
+                <div class="task-card__title-privacy">
+                  ${elem.isPrivate ? '<img src="assets/img/private.svg" alt="private">' : ''}
+                  <h3 class="task-card__title">${elem.name}</h3>
+                </div>
+                <span class="task-card__date">${elem.createdAt.toLocaleString()}</span>
+            </div>
+            <div class="task-card__user-message">
+                <span class="task-card__user-name">${elem.assignee}</span>
+                <div class="task-card__message">
+                    <span class="count-message">${elem.comments.length}</span>
+                    <img src='assets/img/message.svg' alt='message-icon'
+                        class="image-message"></img>
+                </div>
+            </div>
+        </div>
+        <div class="task-card__info">
+        ${elem.description}
+        </div>
+        <div class="task-card__additional">
+            <div class="task-card__status task-card__title">${elem.status}</div>
+            <div class="task-card__progress ${elem.priority.toLowerCase()}-status">${elem.priority}</div>
+        </div>
+        <span class="line"></span>
+        <div class="task-card__buttons">
+            <button class="task-card__button button">edit</button>
+            <button class="task-card__button button">delete</button>
+        </div>
+    </div>`).slice(0, 10).join('\n');
+    }
+
+    createListTask(listTasksToDo, taskToDo);
+    createListTask(listTasksInProgress, taskInProgress);
+    createListTask(listTasksComplete, taskComplete);
+    return true;
+  }
+}
+
+class TaskView {
+  constructor(containerId) {
+    this.container = document.querySelector(containerId);
+  }
+
+  display(task) {
+    this.container.innerHTML = `<div class="task-page__task-card task-card">
+    <div class="task-page__btn-link"><a class="task-page__link" href="main.html">&#8656; Return back</a>
+        <div class="task-card__buttons">
+            <button class="task-page__btn task-card__button button">edit</button>
+            <button class="task-page__btn task-card__button button">delete</button>
+        </div>
+    </div>
+    <div class="task-card__header">
+        <div class="task-card__title-date">
+            <div class="task-card__title-privacy">
+                <h3 class="task-page__title task-card__title">${task.name}</h3>
+                <div class="image-privacy"></div>
+            </div>
+            <span class="task-card__date">${task.createdAt.toLocaleString()}</span>
+        </div>
+        <span class="task-card__user-name">${task.assignee}</span>
+    </div>
+    <div class="task-page__info task-card__info">
+    ${task.description}
+    </div>
+    <div class="task-card__additional">
+        <div class="task-page__subtitle task-card__status task-card__title">${task.status}</div>
+        <div class="task-card__progress low-status">${task.priority}</div>
+    </div>
+    <span class="line"></span>
+</div>
+<div class="comments">
+                <h3 class="task-page__subtitle task-card__title">Comments</h3>
+                <div class="comments-field">${task.comments.map((elem) => `<div class="comment-card">
+                <div class="comment__header">
+                    <span class="comment__user-name">${elem.author}</span>
+                    <span class="comment__date">${elem.createdAt.toLocaleString()}</span>
+                </div>
+                <span class="comment-text">${elem.text}</span>
+            </div>`).join('\n')}<div class="add-comment">
+            <input class='input-comment' type="text">
+            <button class="button">SEND</button>
+        </div>
+        </div>
+        </div>`;
+  }
+}
+
+const newCollection = new TaskCollection(tasks);
+const headerView = new HeaderView('.header');
+const taskFeedView = new TaskFeedView('.board');
+const task = new TaskView('.task-page');
+
+function setCurrentUser(user) {
+  headerView.display(user);
+  newCollection.user = user;
+}
+
+function getFeed(skip, top, filterConfig) {
+  const arr = newCollection.getPage(skip, top, filterConfig);
+  taskFeedView.display(arr);
+}
+
+function addTask(task) {
+  newCollection.add(
+    task.name,
+    task.description,
+    task.assignee,
+    task.status,
+    task.priority,
+    task.isPrivate,
+  );
+  getFeed(0, newCollection.tasks.length);
+}
+
+function editTask(id, task) {
+  newCollection.edit(
+    id,
+    task.name,
+    task.description,
+    task.assignee,
+    task.status,
+    task.priority,
+    task.isPrivate,
+  );
+  getFeed(0, newCollection.tasks.length);
+}
+
+function removeTask(id) {
+  newCollection.remove(id);
+  getFeed(0, newCollection.tasks.length);
+}
+
+function showTask(id) {
+  task.display(newCollection.get(id));
+}
+
+setCurrentUser('Lesha');
+getFeed();
+addTask(new Task('Task', 'Description', 'Lesha', 'In progress', 'Low', true));
+removeTask('13');
+editTask('14', { name: 'New Task 14', description: 'New Description! Написать программу для определения оптимального маршрута между несколькими точками на карте с учетом расстояний и времени в пути, используя данные о дорожной сети и трафике.' });
+showTask('14');
