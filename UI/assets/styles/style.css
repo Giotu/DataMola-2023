@@ -5,10 +5,20 @@
     --color-primary-1: #A494E5;
     --color-secondary: #e3e3e3;
     --color-secondary-1: #868686;
+
+    --basic-font-size: 0.875rem;
+    --border-radius: 1rem;
+    --basic-gap: 1rem;
+    --basic-padding-left-right: 1.25rem;
+    --basic-padding-top-bottom: 0.75rem;
 }
 
 * {
     box-sizing: border-box;
+}
+
+html {
+    font-size: 1rem;
 }
 
 body {
@@ -19,7 +29,7 @@ body {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--basic-font-size);
     background: var(--color-white);
     color: var(--color-black);
 }
@@ -45,9 +55,9 @@ a {
 }
 
 .container {
-    max-width: 1440px;
+    max-width: 90rem;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 var(--basic-padding-left-right);
 }
 
 .navigation,
@@ -56,14 +66,14 @@ a {
 .main__container {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 1rem;
 }
 
 .navigation {
     justify-content: space-between;
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 16px;
+    font-size: 1rem;
     padding: 10px 0;
     margin: 0;
 }
@@ -73,7 +83,7 @@ a {
 }
 
 .header__logo-title {
-    font-size: 42px;
+    font-size: 2.625rem;
 }
 
 .header__user-name:visited {
@@ -84,12 +94,12 @@ a {
     background: var(--color-primary-1);
     color: var(--color-white);
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--basic-font-size);
     font-weight: bold;
     text-transform: uppercase;
-    padding: 12px 20px;
+    padding: var(--basic-padding-top-bottom) var(--basic-padding-left-right);
     border: none;
-    border-radius: 16px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     transition: 0.5s all ease;
 }
@@ -101,6 +111,7 @@ a {
 .features {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
 }
 
@@ -114,13 +125,13 @@ a {
     background: var(--color-white);
     color: var(--color-primary);
     font-family: inherit;
-    font-size: 14px;
+    font-size: var(--basic-font-size);
     font-weight: bold;
     text-transform: uppercase;
-    padding: 12px 20px;
+    padding: var(--basic-padding-top-bottom) var(--basic-padding-left-right);
     border: 2px solid var(--color-primary);
     cursor: pointer;
-    min-width: 90px;
+    min-width: 5.625rem;
 }
 
 .toogle-btn_active {
@@ -137,20 +148,20 @@ a {
 .list-task__wrapper {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.75rem;
     background: var(--color-secondary);
-    height: 700px;
-    border-radius: 16px;
+    height: 43.75rem;
+    border-radius: var(--border-radius);
     width: 33%;
-    max-width: 380px;
-    padding: 10px;
+    max-width: 23.75rem;
+    padding: 0.625rem;
 }
 
 .list-task {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    height: 600px;
+    gap: 0.625rem;
+    height: 37.5rem;
     overflow-y: auto;
 }
 
@@ -174,10 +185,10 @@ a {
 .task-card {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
     background: var(--color-white);
-    padding: 10px;
-    border-radius: 8px;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
     cursor: pointer;
 }
 
@@ -190,7 +201,7 @@ a {
 
 .task-card__title-privacy {
     display: flex;
-    gap: 4px;
+    gap: 0.25rem;
 }
 
 .task-card__title {
@@ -198,6 +209,10 @@ a {
     text-transform: uppercase;
     font-weight: bold;
     color: var(--color-primary);
+    max-width: 15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .task-card__date {
@@ -207,7 +222,7 @@ a {
 .task-card__message {
     display: flex;
     justify-content: center;
-    gap: 4px;
+    gap: 0.25rem;
 }
 
 .task-card__info {
@@ -219,7 +234,7 @@ a {
 
 .task-card__progress {
     padding: 3px 6px;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 }
 
 .high-status {
@@ -246,11 +261,11 @@ a {
 .task-card__buttons {
     display: flex;
     justify-content: center;
-    gap: 16px;
+    gap: var(--basic-gap);
 }
 
 .task-card__button {
-    padding: 8px 14px;
+    padding: 0.5rem 0.875rem;
 }
 
 .footer {
@@ -271,11 +286,11 @@ a {
 .profile {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--basic-gap);
     margin: 0 auto;
-    padding: 20px 50px;
+    padding: 1.25rem 3rem;
     border: 1px solid var(--color-primary);
-    width: 600px;
+    width: 37.5rem;
 }
 
 .profile__header {
@@ -297,11 +312,11 @@ a {
 .profile__avatar {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--basic-gap);
 }
 
 .profile__title {
-    font-size: 26px;
+    font-size: 1.625rem;
     font-weight: bold;
 }
 
@@ -310,7 +325,7 @@ a {
 }
 
 .lable-input label {
-    width: 135px;
+    width: 8rem;
     font-weight: bold;
 }
 
@@ -319,13 +334,14 @@ a {
     font-weight: 400;
     color: var(--color-primary);
     background: var(--color-white);
-    padding: 4px 10px;
+    padding: 0.25rem 0.625rem;
+    ;
 }
 
 .profile__footer {
     display: flex;
     justify-content: flex-end;
-    gap: 16px;
+    gap: var(--basic-gap);
 }
 
 /* task page */
@@ -337,10 +353,22 @@ a {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 2rem;
+}
+
+.task-page__btn-link {
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-page__link {
+    color: var(--color-black);
+    font-size: 1rem;
 }
 
 .task-page__task-card {
-    width: 75%;
+    width: 85%;
+    max-width: 75rem;
     font-size: 1rem;
     border-radius: 0;
 }
@@ -361,18 +389,18 @@ a {
 
 .comments {
     width: 65%;
+    max-width: 70rem;
 }
 
 .comments-field {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    background: var(--color-secondary);
-    padding: 20px;
+    gap: 1rem;
+    padding: 1.25rem;
 }
 
 .comment-card {
-    padding: 20px;
+    padding: 1.25rem;
     box-shadow: 1px 1px 3px var(--color-black);
     background: var(--color-white);
 }
@@ -393,14 +421,16 @@ a {
 
 .add-comment {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    ;
 }
 
 .input-comment {
-    width: 100%;
-    height: 60px;
-    border-radius: 20px;
+    width: 80%;
+    height: 6rem;
+    border-radius: var(--border-radius);
 }
 
 .task-page__btn {
@@ -431,6 +461,6 @@ a {
     }
 
     .container {
-        margin: 20px auto;
+        margin: 1.25rem auto;
     }
 }
