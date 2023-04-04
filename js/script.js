@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-shadow */
 /* eslint-disable class-methods-use-this */
@@ -447,7 +448,7 @@ class Task {
 }
 
 class TaskCollection {
-  _user = 'Aleksey';
+  _user = '';
 
   constructor(tasks) {
     this._tasks = tasks || [];
@@ -501,7 +502,7 @@ class TaskCollection {
       filteredTasks = filteredTasks.filter(({ priority }) => priority === filterConfig.priority);
     }
 
-    if (filterConfig.isPrivate) {
+    if (filterConfig.isPrivate !== undefined) {
       filteredTasks = filteredTasks.filter(({ isPrivate }) => isPrivate === filterConfig.isPrivate);
     }
 
@@ -610,7 +611,7 @@ class HeaderView {
 
   display(user) {
     const userName = document.querySelector('.header__user-name');
-    const avatar = document.querySelector('.header__user-name');
+    const avatar = document.querySelector('.header__user-avatar');
     const buttonHeader = document.querySelector('.user-info>button');
     const buttonAddTask = document.querySelector('.button-add-task');
 
@@ -638,59 +639,87 @@ class HeaderView {
 class TaskFeedView {
   constructor(containerId) {
     this.container = document.querySelector(containerId);
+    this.limit = 10;
   }
 
-  display(array) {
+  display(array, user) {
+    this.user = user;
     if (this.container === null) {
       return false;
     }
+
+    document.querySelectorAll('.list-task__add').forEach((btn) => {
+      if (this.user) {
+        btn.hidden = false;
+      } else {
+        btn.hidden = true;
+      }
+    });
+
     const listsTasks = this.container.querySelectorAll('.list-task');
     const listTasksToDo = listsTasks[0];
     const listTasksInProgress = listsTasks[1];
     const listTasksComplete = listsTasks[2];
-    const taskToDo = array.filter((elem) => elem.status === 'To Do');
-    const taskInProgress = array.filter((elem) => elem.status === 'In progress');
-    const taskComplete = array.filter((elem) => elem.status === 'Complete');
+    const btnLoad = document.querySelector('.btn-load');
+    btnLoad.hidden = true;
 
-    function createListTask(listTask, arrayTasks) {
-      const list = listTask;
-      list.innerHTML = arrayTasks.map((elem) => `<div class="task-card">
-        <div class="task-card__header">
-            <div class="task-card__title-date">
-                <div class="task-card__title-privacy">
-                  ${elem.isPrivate ? '<img src="assets/img/private.svg" alt="private">' : ''}
-                  <h3 class="task-card__title">${elem.name}</h3>
-                </div>
-                <span class="task-card__date">${elem.createdAt.toLocaleString()}</span>
-            </div>
-            <div class="task-card__user-message">
-                <span class="task-card__user-name">${elem.assignee}</span>
-                <div class="task-card__message">
-                    <span class="count-message">${elem.comments.length}</span>
-                    <img src='assets/img/message.svg' alt='message-icon'
-                        class="image-message"></img>
-                </div>
-            </div>
-        </div>
-        <div class="task-card__info">
-        ${elem.description}
-        </div>
-        <div class="task-card__additional">
-            <div class="task-card__status task-card__title">${elem.status}</div>
-            <div class="task-card__progress ${elem.priority.toLowerCase()}-status">${elem.priority}</div>
-        </div>
-        <span class="line"></span>
-        <div class="task-card__buttons">
-            <button class="task-card__button button">edit</button>
-            <button class="task-card__button button">delete</button>
-        </div>
-    </div>`).slice(0, 10).join('\n');
-    }
+    const taskFilter = array.reduce((next, curr) => {
+      if (!(curr.status in next)) {
+        next[curr.status] = [];
+      }
+      next[curr.status].push(curr);
+      return next;
+    }, {});
 
-    createListTask(listTasksToDo, taskToDo);
-    createListTask(listTasksInProgress, taskInProgress);
-    createListTask(listTasksComplete, taskComplete);
+    this.createListTask(listTasksToDo, taskFilter['To Do']);
+    this.createListTask(listTasksInProgress, taskFilter['In progress']);
+    this.createListTask(listTasksComplete, taskFilter.Complete);
+
+    Object.values(taskFilter).forEach((arr) => {
+      if (arr.length > this.limit) {
+        btnLoad.hidden = false;
+      }
+    });
     return true;
+  }
+
+  createListTask(listTask, arrayTasks) {
+    const list = listTask;
+    list.innerHTML = arrayTasks.map((elem) => `<div class="task-card" data-id =${elem.id}>
+      <div class="task-card__header">
+          <div class="task-card__title-date">
+              <div class="task-card__title-privacy">
+                ${elem.isPrivate ? '<img src="assets/img/private.svg" alt="private">' : ''}
+                <h3 class="task-card__title">${elem.name}</h3>
+              </div>
+              <span class="task-card__date">${elem.createdAt.toLocaleString()}</span>
+          </div>
+          <div class="task-card__user-message">
+              <span class="task-card__user-name">${elem.assignee}</span>
+              <div class="task-card__message">
+                  <span class="count-message">${elem.comments.length}</span>
+                  <img src='assets/img/message.svg' alt='message-icon'
+                      class="image-message"></img>
+              </div>
+          </div>
+      </div>
+      <div class="task-card__info">
+      ${elem.description}
+      </div>
+      <div class="task-card__additional">
+          <div class="task-card__status task-card__title">${elem.status}</div>
+          <div class="task-card__progress ${elem.priority.toLowerCase()}-status">${elem.priority}</div>
+      </div>
+      ${this.user ? `<span class="line"></span>
+      <div class="task-card__buttons">
+          <button class="task-card__button button">edit</button>
+          <button class="task-card__button button btn-delete">delete</button>
+      </div>` : ''}
+  </div>`).slice(0, this.limit).join('\n');
+  }
+
+  newLimit() {
+    this.limit += 10;
   }
 }
 
@@ -743,58 +772,123 @@ class TaskView {
   }
 }
 
-const newCollection = new TaskCollection(tasks);
-const headerView = new HeaderView('.header');
-const taskFeedView = new TaskFeedView('.board');
-const task = new TaskView('.task-page');
+class TasksController {
+  constructor(collection, header, taskFeed, taskView) {
+    this.collection = collection;
+    this.header = header;
+    this.taskFeed = taskFeed;
+    this.taskView = taskView;
+  }
 
-function setCurrentUser(user) {
-  headerView.display(user);
-  newCollection.user = user;
+  setCurrentUser(user) {
+    this.collection.user = user;
+    this.header.display(user);
+    this.getFeed();
+  }
+
+  getFeed(skip = 0, top = this.collection.tasks.length, filterConfig = {}) {
+    if (!this.collection.user) {
+      filterConfig = { isPrivate: false };
+    }
+    const arr = this.collection.getPage(skip, top, filterConfig);
+    this.taskFeed.display(arr, this.collection.user);
+  }
+
+  addTask() {
+    const name = document.querySelector('#name').value;
+    const assignee = document.querySelector('#assignee').value;
+    const description = document.querySelector('#description').value;
+    const status = document.querySelector('#status').value;
+    const priority = document.querySelector('#priority').value;
+    const isPrivate = Boolean(document.querySelector('#isPrivate').value);
+    const add = this.collection.add(
+      name,
+      description,
+      assignee,
+      status,
+      priority,
+      isPrivate,
+    );
+    if (add) {
+      this.getFeed();
+    }
+  }
+
+  editTask(id, task) {
+    this.collection.edit(
+      id,
+      task.name,
+      task.description,
+      task.assignee,
+      task.status,
+      task.priority,
+      task.isPrivate,
+    );
+    this.getFeed();
+  }
+
+  removeTask(id) {
+    this.collection.remove(id);
+    this.getFeed();
+  }
+
+  showTask(id) {
+    document.querySelector('.board').style.display = 'none';
+    document.querySelector('.features').style.display = 'none';
+    this.taskView.display(this.collection.get(id));
+  }
 }
 
-function getFeed(skip, top, filterConfig) {
-  const arr = newCollection.getPage(skip, top, filterConfig);
-  taskFeedView.display(arr);
-}
+const collection = new TaskCollection(tasks);
+const header = new HeaderView('.header');
+const taskFeed = new TaskFeedView('.board');
+const taskView = new TaskView('.task-page');
 
-function addTask(task) {
-  newCollection.add(
-    task.name,
-    task.description,
-    task.assignee,
-    task.status,
-    task.priority,
-    task.isPrivate,
-  );
-  getFeed(0, newCollection.tasks.length);
-}
+const controller = new TasksController(collection, header, taskFeed, taskView);
 
-function editTask(id, task) {
-  newCollection.edit(
-    id,
-    task.name,
-    task.description,
-    task.assignee,
-    task.status,
-    task.priority,
-    task.isPrivate,
-  );
-  getFeed(0, newCollection.tasks.length);
-}
+// Авторизация
+controller.setCurrentUser('Lesha');
 
-function removeTask(id) {
-  newCollection.remove(id);
-  getFeed(0, newCollection.tasks.length);
-}
+// события с доской задач, кроме редактирования
 
-function showTask(id) {
-  task.display(newCollection.get(id));
-}
+document.querySelectorAll('.list-task').forEach((list) => {
+  list.addEventListener('click', (e) => {
+    const taskCard = e.target.closest('.task-card');
+    if (controller.collection.user) {
+      if (e.target.closest('.btn-delete')) {
+        controller.removeTask(taskCard.dataset.id);
+        return;
+      }
+      if (taskCard) {
+        controller.showTask(taskCard.dataset.id);
+      }
+    }
+  });
+});
 
-setCurrentUser('Lesha');
-getFeed();
-addTask(new Task('Task', 'Description', 'Lesha', 'In progress', 'Low', true));
-removeTask('13');
-editTask('14', { name: 'New Task 14', description: 'New Description! Написать программу для определения оптимального маршрута между несколькими точками на карте с учетом расстояний и времени в пути, используя данные о дорожной сети и трафике.' });
-showTask('14');
+const popup = document.querySelector('.popup');
+
+document.querySelectorAll('.list-task__add').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    popup.classList.add('open');
+    document.querySelector('#assignee').setAttribute('value', controller.collection.user);
+  });
+});
+
+popup.addEventListener('click', (e) => {
+  if (e.target === popup) {
+    popup.classList.remove('open');
+  }
+});
+
+const formCreate = document.querySelector('.popup__body');
+formCreate.addEventListener('submit', (e) => {
+  e.preventDefault();
+  controller.addTask();
+  formCreate.reset();
+});
+
+document.querySelector('.btn-load').addEventListener('click', () => {
+  taskFeed.newLimit();
+  controller.getFeed();
+});
