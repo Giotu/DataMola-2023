@@ -321,6 +321,11 @@ textarea {
     align-self: center;
 }
 
+.btn-load:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .footer {
     background: var(--color-primary);
 }

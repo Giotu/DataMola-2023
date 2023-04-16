@@ -3,6 +3,13 @@
 /* eslint-disable no-shadow */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
+
+const statusTask = {
+  toDo: 'To Do',
+  inProgress: 'In progress',
+  complete: 'Complete',
+};
+
 const tasks = [
   {
     id: '1',
@@ -318,6 +325,61 @@ const tasks = [
     id: '20',
     name: 'Task 20',
     description: 'Description for Task 20',
+    createdAt: new Date('2023-01-20'),
+    assignee: 'Jane',
+    status: 'In progress',
+    priority: 'Medium',
+    isPrivate: true,
+    comments: [],
+  },
+  {
+    id: '23',
+    name: 'Task 23',
+    description: 'Description for Task 23',
+    createdAt: new Date('2023-04-10'),
+    assignee: 'Aleksey',
+    status: 'In progress',
+    priority: 'Medium',
+    isPrivate: true,
+    comments: [],
+  },
+  {
+    id: '24',
+    name: 'Task 24',
+    description: 'Description for Task 24',
+    createdAt: new Date('2023-01-20'),
+    assignee: 'Aleksey',
+    status: 'In progress',
+    priority: 'Medium',
+    isPrivate: true,
+    comments: [],
+  },
+  {
+    id: '25',
+    name: 'Task 25',
+    description: 'Description for Task 25',
+    createdAt: new Date('2023-01-20'),
+    assignee: 'Jane',
+    status: 'In progress',
+    priority: 'Medium',
+    isPrivate: true,
+    comments: [],
+  },
+  {
+    id: '26',
+    name: 'Task 26',
+    description: 'Description for Task 26',
+    createdAt: new Date('2023-01-20'),
+    assignee: 'Jane',
+    status: 'In progress',
+    priority: 'Medium',
+    isPrivate: true,
+    comments: [],
+  },
+  {
+    id: '27',
+    name: 'Task 27',
+    description: 'Description for Task 27',
     createdAt: new Date('2023-01-20'),
     assignee: 'Jane',
     status: 'In progress',
@@ -649,43 +711,37 @@ class TaskFeedView {
     }
 
     document.querySelectorAll('.list-task__add').forEach((btn) => {
-      if (this.user) {
-        btn.hidden = false;
-      } else {
-        btn.hidden = true;
-      }
+      btn.hidden = !this.user;
     });
 
     const listsTasks = this.container.querySelectorAll('.list-task');
-    const listTasksToDo = listsTasks[0];
-    const listTasksInProgress = listsTasks[1];
-    const listTasksComplete = listsTasks[2];
+    const [listTasksToDo, listTasksInProgress, listTasksComplete] = listsTasks;
     const btnLoad = document.querySelector('.btn-load');
-    btnLoad.hidden = true;
+    btnLoad.disabled = true;
 
-    const taskFilter = array.reduce((next, curr) => {
-      if (!(curr.status in next)) {
-        next[curr.status] = [];
+    const taskFilter = array.reduce((acc, curr) => {
+      if (!(curr.status in acc)) {
+        acc[curr.status] = [];
       }
-      next[curr.status].push(curr);
-      return next;
+      acc[curr.status].push(curr);
+      return acc;
     }, {});
 
-    this.createListTask(listTasksToDo, taskFilter['To Do']);
-    this.createListTask(listTasksInProgress, taskFilter['In progress']);
-    this.createListTask(listTasksComplete, taskFilter.Complete);
+    this.createListTask(listTasksToDo, taskFilter[statusTask.toDo]);
+    this.createListTask(listTasksInProgress, taskFilter[statusTask.inProgress]);
+    this.createListTask(listTasksComplete, taskFilter[statusTask.complete]);
 
     Object.values(taskFilter).forEach((arr) => {
       if (arr.length > this.limit) {
-        btnLoad.hidden = false;
+        btnLoad.disabled = false;
       }
     });
     return true;
   }
 
   createListTask(listTask, arrayTasks) {
-    const list = listTask;
-    list.innerHTML = arrayTasks.map((elem) => `<div class="task-card" data-id =${elem.id}>
+    listTask.innerHTML = arrayTasks.map((elem) => `
+    <div class="task-card" data-id =${elem.id}>
       <div class="task-card__header">
           <div class="task-card__title-date">
               <div class="task-card__title-privacy">
@@ -710,7 +766,7 @@ class TaskFeedView {
           <div class="task-card__status task-card__title">${elem.status}</div>
           <div class="task-card__progress ${elem.priority.toLowerCase()}-status">${elem.priority}</div>
       </div>
-      ${this.user ? `<span class="line"></span>
+      ${this.user === elem.assignee ? `<span class="line"></span>
       <div class="task-card__buttons">
           <button class="task-card__button button">edit</button>
           <button class="task-card__button button btn-delete">delete</button>
@@ -729,8 +785,9 @@ class TaskView {
   }
 
   display(task) {
-    this.container.innerHTML = `<div class="task-page__task-card task-card">
-    <div class="task-page__btn-link"><a class="task-page__link" href="main.html">&#8656; Return back</a>
+    this.container.innerHTML = `
+    <div class="task-page__task-card task-card">
+      <div class="task-page__btn-link"><a class="task-page__link" href="main.html">&#8656; Return back</a>
         <div class="task-card__buttons">
             <button class="task-page__btn task-card__button button">edit</button>
             <button class="task-page__btn task-card__button button">delete</button>
@@ -756,19 +813,19 @@ class TaskView {
     <span class="line"></span>
 </div>
 <div class="comments">
-                <h3 class="task-page__subtitle task-card__title">Comments</h3>
-                <div class="comments-field">${task.comments.map((elem) => `<div class="comment-card">
-                <div class="comment__header">
-                    <span class="comment__user-name">${elem.author}</span>
-                    <span class="comment__date">${elem.createdAt.toLocaleString()}</span>
-                </div>
-                <span class="comment-text">${elem.text}</span>
-            </div>`).join('\n')}<div class="add-comment">
-            <input class='input-comment' type="text">
-            <button class="button">SEND</button>
-        </div>
-        </div>
-        </div>`;
+  <h3 class="task-page__subtitle task-card__title">Comments</h3>
+    <div class="comments-field">${task.comments.map((elem) => `<div class="comment-card">
+      <div class="comment__header">
+        <span class="comment__user-name">${elem.author}</span>
+        <span class="comment__date">${elem.createdAt.toLocaleString()}</span>
+      </div>
+      <span class="comment-text">${elem.text}</span>
+      </div>`).join('\n')}<div class="add-comment">
+        <input class='input-comment' type="text">
+        <button class="button">SEND</button>
+      </div>
+    </div>
+  </div>`;
   }
 }
 
@@ -846,10 +903,7 @@ const taskView = new TaskView('.task-page');
 
 const controller = new TasksController(collection, header, taskFeed, taskView);
 
-// Авторизация
-controller.setCurrentUser('Lesha');
-
-// события с доской задач, кроме редактирования
+controller.setCurrentUser('Aleksey');
 
 document.querySelectorAll('.list-task').forEach((list) => {
   list.addEventListener('click', (e) => {
