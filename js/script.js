@@ -208,9 +208,10 @@ class TaskView {
 }
 
 class TasksController {
-  constructor(collection, taskFeed) {
+  constructor(collection, taskFeed, taskView) {
     this.api = collection;
     this.taskFeed = taskFeed;
+    this.taskView = taskView;
   }
 
   async getFeed() {
@@ -223,12 +224,14 @@ class TasksController {
     document.querySelector('.btn-load').style.display = 'none';
     document.querySelector('.features').style.display = 'none';
     const res = await this.api.getTask(id);
+    this.taskView.display(res);
   }
 }
 
 const api = new TaskFeedApiService('http://169.60.206.50:7777/api');
 const taskFeed = new TaskFeedView('.board');
-const controller = new TasksController(api, taskFeed);
+const taskView = new TaskView('.task-page');
+const controller = new TasksController(api, taskFeed, taskView);
 controller.getFeed();
 controller.api.login({
   login: 'Lesha',
