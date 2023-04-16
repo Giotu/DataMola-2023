@@ -42,6 +42,25 @@ class TaskFeedApiService {
       console.error(error);
     }
   }
+
+  async login(data) {
+    try {
+      const res = await fetch(`${this.serverUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        this.user = json.login;
+      }
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 class TaskFeedView {
@@ -141,3 +160,7 @@ const api = new TaskFeedApiService('http://169.60.206.50:7777/api');
 const taskFeed = new TaskFeedView('.board');
 const controller = new TasksController(api, taskFeed);
 controller.getFeed();
+controller.api.login({
+  login: 'Lesha',
+  password: '123KJ',
+});
