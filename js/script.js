@@ -6,8 +6,8 @@ const statusTask = {
   complete: 'Complete',
 };
 
-function formattingDate(badDate) {
-  const date = new Date(badDate);
+function formattingDate(badformatDate) {
+  const date = new Date(badformatDate);
   function addLeadingZero(value) {
     return value < 10 ? `0${value}` : value;
   }
@@ -21,7 +21,7 @@ class TaskFeedApiService {
   constructor(serverUrl) {
     this.serverUrl = serverUrl;
     this._tasks = [];
-    this.user = 'Masha';
+    this.user = '';
   }
 
   get tasks() {
@@ -43,6 +43,19 @@ class TaskFeedApiService {
     }
   }
 
+  async getTask(id) {
+    try {
+      const res = await fetch(`${this.serverUrl}/tasks/${id}`);
+      const json = await res.json();
+      if (!res.ok) {
+        return res;
+      }
+      return json;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async login(data) {
     try {
       const res = await fetch(`${this.serverUrl}/auth/login`, {
@@ -58,7 +71,7 @@ class TaskFeedApiService {
       }
       return json;
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 }
@@ -144,6 +157,56 @@ class TaskFeedView {
   }
 }
 
+class TaskView {
+  constructor(containerId) {
+    this.container = document.querySelector(containerId);
+  }
+
+  display(task) {
+    this.container.innerHTML = `
+  <div class="task-page__task-card task-card">
+    <div class="task-page__btn-link"><a class="task-page__link" href="main.html">&#8656; Return back</a>
+      <div class="task-card__buttons">
+          <button class="task-page__btn task-card__button button">edit</button>
+          <button class="task-page__btn task-card__button button">delete</button>
+      </div>
+  </div>
+  <div class="task-card__header">
+      <div class="task-card__title-date">
+          <div class="task-card__title-privacy">
+              <h3 class="task-page__title task-card__title">${task.name}</h3>
+              <div class="image-privacy"></div>
+          </div>
+          <span class="task-card__date">${task.createdAt.toLocaleString()}</span>
+      </div>
+      <span class="task-card__user-name">${task.assignee}</span>
+  </div>
+  <div class="task-page__info task-card__info">
+  ${task.description}
+  </div>
+  <div class="task-card__additional">
+      <div class="task-page__subtitle task-card__status task-card__title">${task.status}</div>
+      <div class="task-card__progress low-status">${task.priority}</div>
+  </div>
+  <span class="line"></span>
+</div>
+<div class="comments">
+<h3 class="task-page__subtitle task-card__title">Comments</h3>
+  <div class="comments-field">${task.comments.map((elem) => `<div class="comment-card">
+    <div class="comment__header">
+      <span class="comment__user-name">${elem.author}</span>
+      <span class="comment__date">${elem.createdAt.toLocaleString()}</span>
+    </div>
+    <span class="comment-text">${elem.text}</span>
+    </div>`).join('\n')}<div class="add-comment">
+      <input class='input-comment' type="text">
+      <button class="button">SEND</button>
+    </div>
+  </div>
+</div>`;
+  }
+}
+
 class TasksController {
   constructor(collection, taskFeed) {
     this.api = collection;
@@ -153,6 +216,13 @@ class TasksController {
   async getFeed() {
     await this.api.getTasks();
     this.taskFeed.display(this.api.tasks, this.api.user);
+  }
+
+  async showTask(id) {
+    document.querySelector('.board').style.display = 'none';
+    document.querySelector('.btn-load').style.display = 'none';
+    document.querySelector('.features').style.display = 'none';
+    const res = await this.api.getTask(id);
   }
 }
 
