@@ -891,6 +891,7 @@ class TasksController {
 
   showTask(id) {
     document.querySelector('.board').style.display = 'none';
+    document.querySelector('.btn-load').style.display = 'none';
     document.querySelector('.features').style.display = 'none';
     this.taskView.display(this.collection.get(id));
   }
