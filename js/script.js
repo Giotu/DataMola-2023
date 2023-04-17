@@ -1,3 +1,6 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable no-param-reassign */
+/* eslint-disable consistent-return */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-underscore-dangle */
 const statusTask = {
