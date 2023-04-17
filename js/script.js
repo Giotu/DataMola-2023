@@ -22,6 +22,7 @@ class TaskFeedApiService {
     this.serverUrl = serverUrl;
     this._tasks = [];
     this.user = '';
+    this.token = '';
   }
 
   get tasks() {
@@ -56,6 +57,25 @@ class TaskFeedApiService {
     }
   }
 
+  async deleteTask(id) {
+    try {
+      const res = await fetch(`${this.serverUrl}/tasks/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+      const json = await res.json();
+      if (res.ok) {
+        console.log(res.ok);
+      }
+      return json;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async login(data) {
     try {
       const res = await fetch(`${this.serverUrl}/auth/login`, {
@@ -68,6 +88,7 @@ class TaskFeedApiService {
       const json = await res.json();
       if (res.ok) {
         this.user = json.login;
+        this.token = json.token;
       }
       return json;
     } catch (error) {
@@ -116,6 +137,7 @@ class TaskFeedView {
 
   display(array, user) {
     this.user = user;
+
     if (this.container === null) {
       return false;
     }
@@ -250,7 +272,7 @@ class TasksController {
   async setCurrentUser(data) {
     await this.api.login(data);
     this.headerView.display(this.api.user);
-    await this.getFeed();
+    this.getFeed();
   }
 
   async getFeed() {
@@ -268,6 +290,11 @@ class TasksController {
     const res = await this.api.getTask(id);
     this.taskView.display(res);
   }
+
+  async removeTask(id) {
+    await this.api.deleteTask(id);
+    this.getFeed();
+  }
 }
 
 const api = new TaskFeedApiService('http://169.60.206.50:7777/api');
@@ -276,6 +303,6 @@ const taskFeed = new TaskFeedView('.board');
 const taskView = new TaskView('.task-page');
 const controller = new TasksController(api, headerView, taskFeed, taskView);
 controller.setCurrentUser({
-  login: 'Lesha',
-  password: '123KJ',
+  login: 'Nikita',
+  password: '12345A',
 });
