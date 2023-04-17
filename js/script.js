@@ -240,7 +240,7 @@ class TaskFeedView {
     </div>
     ${this.user === elem.assignee.login ? `<span class="line"></span>
     <div class="task-card__buttons">
-        <button class="task-card__button button">edit</button>
+        <button class="task-card__button button btn-edit">edit</button>
         <button class="task-card__button button btn-delete">delete</button>
     </div>` : ''}
 </div>`).slice(0, this.limit).join('\n');
@@ -374,7 +374,7 @@ const popup = document.querySelector('.popup');
 document.querySelectorAll('.list-task__add').forEach((btn) => {
   btn.addEventListener('click', () => {
     popup.classList.add('open');
-    document.querySelector('#assignee').setAttribute('value', controller.api.user.login);
+    document.querySelector('#assignee').setAttribute('value', controller.api.user.id);
   });
 });
 
