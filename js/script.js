@@ -57,6 +57,29 @@ class TaskFeedApiService {
     }
   }
 
+  async addTask(task) {
+    try {
+      const res = await fetch(`${this.serverUrl}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: JSON.stringify(task),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        console.log(res.ok);
+      } else {
+        throw new Error('Invalid data');
+      }
+      return json;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   async deleteTask(id) {
     try {
       const res = await fetch(`${this.serverUrl}/tasks/${id}`, {
@@ -301,6 +324,12 @@ class TasksController {
     this.taskFeed.display(this.api.tasks, this.api.user.login);
   }
 
+  async createTask(task) {
+    const newTask = await this.api.addTask(task);
+    this.getFeed();
+    return newTask;
+  }
+
   async showTask(id) {
     document.querySelector('.board').style.display = 'none';
     document.querySelector('.btn-load').style.display = 'none';
@@ -323,4 +352,51 @@ const controller = new TasksController(api, headerView, taskFeed, taskView);
 controller.setCurrentUser({
   login: 'Nikita',
   password: '12345A',
+});
+
+document.querySelectorAll('.list-task').forEach((list) => {
+  list.addEventListener('click', (e) => {
+    const taskCard = e.target.closest('.task-card');
+    if (controller.api.user) {
+      if (e.target.closest('.btn-delete')) {
+        controller.removeTask(taskCard.dataset.id);
+        return;
+      }
+      if (taskCard) {
+        controller.showTask(taskCard.dataset.id);
+      }
+    }
+  });
+});
+
+const popup = document.querySelector('.popup');
+
+document.querySelectorAll('.list-task__add').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    popup.classList.add('open');
+    document.querySelector('#assignee').setAttribute('value', controller.api.user.login);
+  });
+});
+
+popup.addEventListener('click', (e) => {
+  if (e.target === popup) {
+    popup.classList.remove('open');
+  }
+});
+
+const formCreate = document.querySelector('.popup__body');
+formCreate.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = Object.fromEntries(new FormData(formCreate));
+  formData.isPrivate = !!formData.isPrivate;
+  const result = await controller.createTask(formData);
+  if (result) {
+    formCreate.reset();
+    popup.classList.remove('open');
+  }
+});
+
+document.querySelector('.btn-load').addEventListener('click', () => {
+  taskFeed.newLimit();
+  controller.getFeed();
 });
