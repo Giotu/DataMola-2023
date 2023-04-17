@@ -87,8 +87,25 @@ class TaskFeedApiService {
       });
       const json = await res.json();
       if (res.ok) {
-        this.user = json.login;
         this.token = json.token;
+      }
+      return json;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getUserInfo() {
+    try {
+      const res = await fetch(`${this.serverUrl}/user/myProfile`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+      const json = await res.json();
+      if (res.ok) {
+        this.user = json;
       }
       return json;
     } catch (error) {
@@ -271,16 +288,17 @@ class TasksController {
 
   async setCurrentUser(data) {
     await this.api.login(data);
-    this.headerView.display(this.api.user);
+    await this.api.getUserInfo();
+    this.headerView.display(this.api.user.login);
     this.getFeed();
   }
 
   async getFeed() {
     await this.api.getTasks();
-    if (!this.api.user) {
+    if (!this.api.user.login) {
       this.api.tasks = this.api.tasks.filter((task) => task.isPrivate === false);
     }
-    this.taskFeed.display(this.api.tasks, this.api.user);
+    this.taskFeed.display(this.api.tasks, this.api.user.login);
   }
 
   async showTask(id) {
