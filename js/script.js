@@ -76,6 +76,38 @@ class TaskFeedApiService {
   }
 }
 
+class HeaderView {
+  constructor(containerId) {
+    this.container = document.querySelector(containerId);
+  }
+
+  display(user) {
+    const userName = document.querySelector('.header__user-name');
+    const avatar = document.querySelector('.header__user-avatar');
+    const buttonHeader = document.querySelector('.user-info>button');
+    const buttonAddTask = document.querySelector('.button-add-task');
+
+    if (user) {
+      userName.textContent = user;
+
+      avatar.hidden = false;
+
+      buttonHeader.textContent = 'Exit';
+      if (buttonAddTask) {
+        buttonAddTask.hidden = false;
+      }
+    } else {
+      userName.textContent = null;
+
+      avatar.hidden = true;
+
+      buttonHeader.textContent = 'Log In';
+
+      buttonAddTask.hidden = true;
+    }
+  }
+}
+
 class TaskFeedView {
   constructor(containerId) {
     this.container = document.querySelector(containerId);
@@ -177,9 +209,9 @@ class TaskView {
               <h3 class="task-page__title task-card__title">${task.name}</h3>
               <div class="image-privacy"></div>
           </div>
-          <span class="task-card__date">${task.createdAt.toLocaleString()}</span>
+          <span class="task-card__date">${formattingDate(task.createdAt)}</span>
       </div>
-      <span class="task-card__user-name">${task.assignee}</span>
+      <span class="task-card__user-name">${task.assignee.login}</span>
   </div>
   <div class="task-page__info task-card__info">
   ${task.description}
@@ -194,8 +226,8 @@ class TaskView {
 <h3 class="task-page__subtitle task-card__title">Comments</h3>
   <div class="comments-field">${task.comments.map((elem) => `<div class="comment-card">
     <div class="comment__header">
-      <span class="comment__user-name">${elem.author}</span>
-      <span class="comment__date">${elem.createdAt.toLocaleString()}</span>
+      <span class="comment__user-name">${elem.creator.login}</span>
+      <span class="comment__date">${formattingDate(elem.createdAt)}</span>
     </div>
     <span class="comment-text">${elem.text}</span>
     </div>`).join('\n')}<div class="add-comment">
@@ -208,14 +240,24 @@ class TaskView {
 }
 
 class TasksController {
-  constructor(collection, taskFeed, taskView) {
+  constructor(collection, headerView, taskFeed, taskView) {
     this.api = collection;
+    this.headerView = headerView;
     this.taskFeed = taskFeed;
     this.taskView = taskView;
   }
 
+  async setCurrentUser(data) {
+    await this.api.login(data);
+    this.headerView.display(this.api.user);
+    await this.getFeed();
+  }
+
   async getFeed() {
     await this.api.getTasks();
+    if (!this.api.user) {
+      this.api.tasks = this.api.tasks.filter((task) => task.isPrivate === false);
+    }
     this.taskFeed.display(this.api.tasks, this.api.user);
   }
 
@@ -229,11 +271,11 @@ class TasksController {
 }
 
 const api = new TaskFeedApiService('http://169.60.206.50:7777/api');
+const headerView = new HeaderView('.header');
 const taskFeed = new TaskFeedView('.board');
 const taskView = new TaskView('.task-page');
-const controller = new TasksController(api, taskFeed, taskView);
-controller.getFeed();
-controller.api.login({
+const controller = new TasksController(api, headerView, taskFeed, taskView);
+controller.setCurrentUser({
   login: 'Lesha',
   password: '123KJ',
 });
